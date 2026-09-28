@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="speech-lang" content="{{ lang }}">
+<title>Helper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="top">
+  <span class="brand">Helper</span>
+  <button id="emergency-btn" class="sos" type="button">Emergency Help</button>
+</header>
+
+<main>
+  <!-- TALK -->
+  <section id="screen-home" class="screen active">
+    <div class="clock">
+      <div id="time" class="clock-time"></div>
+      <div id="date" class="clock-date"></div>
+    </div>
+
+    <button id="mic" class="mic" type="button" aria-label="Tap and speak">
+      <svg viewBox="0 0 24 24" width="96" height="96" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>
+      </svg>
+    </button>
+    <div id="mic-label" class="mic-label">Tap and Speak</div>
+
+    <div class="talk">
+      <p id="heard" class="heard"></p>
+      <p id="reply" class="reply">Hello. Tap the button and tell me what you need.</p>
+    </div>
+
+    <form id="typed" class="typed" hidden>
+      <p>Voice is not available in this browser. Please open this page in Chrome, Edge or Safari.</p>
+      <input id="typed-input" type="text" placeholder="Type here" aria-label="Type your request">
+      <button type="submit" class="btn primary">Send</button>
+    </form>
+    <p class="hint">You can say: "Remind me to take my medicine at 8 PM", "Call my daughter", "When is my next appointment?"</p>
+  </section>
+
+  <!-- REMINDERS -->
+  <section id="screen-reminders" class="screen">
+    <h1>My Reminders</h1>
+    <div id="list-reminders" class="list"></div>
+    <p class="empty" id="empty-reminders" hidden>No reminders. Say "Remind me to..." on the Talk screen.</p>
+  </section>
+
+  <!-- PEOPLE -->
+  <section id="screen-people" class="screen">
+    <h1>My People</h1>
+    <div id="list-people" class="list"></div>
+    <p class="empty" id="empty-people" hidden>No people saved. Add someone below.</p>
+    <details class="add">
+      <summary>Add a person</summary>
+      <form id="contact-form">
+        <label>Name <input name="name" required autocomplete="off"></label>
+        <label>Who are they? <input name="relation" placeholder="daughter, doctor, neighbour" autocomplete="off"></label>
+        <label>Phone number <input name="phone" type="tel" inputmode="tel" required autocomplete="off"></label>
+        <label class="check"><input type="checkbox" name="is_emergency"> Call in an emergency</label>
+        <button class="btn primary" type="submit">Save person</button>
+      </form>
+    </details>
+  </section>
+
+  <!-- APPOINTMENTS -->
+  <section id="screen-appointments" class="screen">
+    <h1>My Appointments</h1>
+    <div id="list-appointments" class="list"></div>
+    <p class="empty" id="empty-appointments" hidden>No appointments. Say "I want an appointment with..." on the Talk screen.</p>
+  </section>
+</main>
+
+<nav class="tabs" aria-label="Main">
+  <button type="button" data-screen="home" class="tab active">
+    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+    <span>Talk</span>
+  </button>
+  <button type="button" data-screen="reminders" class="tab">
+    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 6 2 7 2 7H4s2-1 2-7Zm4 10a2 2 0 0 0 4 0"/></svg>
+    <span>Reminders</span>
+  </button>
+  <button type="button" data-screen="people" class="tab">
+    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M17 11a2.6 2.6 0 1 0 0-5.2M17.5 14.5c2.2.3 3.5 1.9 3.5 4.5"/></svg>
+    <span>People</span>
+  </button>
+  <button type="button" data-screen="appointments" class="tab">
+    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10.5h16M8 3.5v4M16 3.5v4"/></svg>
+    <span>Visits</span>
+  </button>
+</nav>
+
+<!-- Confirmation -->
+<div id="confirm" class="overlay" hidden role="dialog" aria-modal="true">
+  <div class="sheet">
+    <p id="confirm-text" class="sheet-text"></p>
+    <div class="sheet-row">
+      <button id="confirm-yes" class="btn yes" type="button">Yes</button>
+      <button id="confirm-no" class="btn no" type="button">No</button>
+    </div>
+    <p class="sheet-note">You can also say "yes" or "no".</p>
+  </div>
+</div>
+
+<!-- Ringing reminder / alarm -->
+<div id="alert" class="overlay alert" hidden role="alertdialog" aria-modal="true">
+  <div class="sheet">
+    <p class="sheet-small">Reminder</p>
+    <p id="alert-text" class="sheet-text"></p>
+    <button id="alert-ok" class="btn yes wide" type="button">OK, done</button>
+  </div>
+</div>
+
+<!-- Read text aloud -->
+<div id="readbox" class="overlay" hidden role="dialog" aria-modal="true">
+  <div class="sheet">
+    <p class="sheet-text">Paste the words to read</p>
+    <textarea id="read-text" rows="5" aria-label="Text to read"></textarea>
+    <div class="sheet-row">
+      <button id="read-paste" class="btn" type="button">Paste</button>
+      <button id="read-go" class="btn primary" type="button">Read it</button>
+    </div>
+    <button id="read-close" class="btn wide" type="button">Close</button>
+  </div>
+</div>
+
+<!-- Emergency -->
+<div id="emergency" class="overlay emergency" hidden role="alertdialog" aria-modal="true">
+  <div class="sheet">
+    <p id="em-title" class="sheet-text">Getting help</p>
+    <p id="em-count" class="em-count"></p>
+    <div id="em-actions" class="em-actions"></div>
+    <button id="em-cancel" class="btn wide" type="button">Cancel</button>
+    <button id="em-close" class="btn wide" type="button" hidden>Close</button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

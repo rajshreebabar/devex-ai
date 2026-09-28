@@ -1,0 +1,69 @@
+from flask import Flask, jsonify, request, send_file
+
+app = Flask(__name__, static_folder="static", static_url_path="")
+
+
+@app.route("/")
+def index():
+    return send_file("static/index.html")
+
+
+@app.route("/api/command", methods=["POST"])
+def api_command():
+    payload = request.get_json(silent=True) or {}
+    text = (payload.get("text") or "").strip()
+    lang = payload.get("lang") or "en"
+    lower_text = text.lower()
+
+    if not text:
+        reply = "Please say or type a command."
+    elif "medicine" in lower_text:
+        reply = "I have noted your medicine reminder."
+    elif "appointment" in lower_text or "doctor" in lower_text:
+        reply = "I have saved your appointment details."
+    elif "location" in lower_text:
+        reply = "I can share your location when needed."
+    elif "emergency" in lower_text or "help" in lower_text:
+        reply = "Emergency assistance is ready."
+    else:
+        reply = "I can help with reminders, appointments, contacts, and emergencies."
+
+    return jsonify({"reply": reply, "lang": lang, "action": None})
+
+
+@app.route("/api/dashboard")
+def dashboard():
+    return jsonify({
+        "medicine": "No medicine",
+        "appointment": "No upcoming appointment",
+        "reminders": "No reminders",
+    })
+
+
+@app.route("/api/due")
+def due():
+    return jsonify([])
+
+
+@app.route("/api/list/<kind>")
+def list_items(kind):
+    return jsonify([])
+
+
+@app.route("/api/add/<kind>", methods=["POST"])
+def add_item(kind):
+    return jsonify({"ok": True})
+
+
+@app.route("/api/item/<table>/<item_id>", methods=["DELETE"])
+def delete_item(table, item_id):
+    return jsonify({"ok": True})
+
+
+@app.route("/api/emergency/<item_id>", methods=["POST"])
+def set_emergency(item_id):
+    return jsonify({"ok": True})
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

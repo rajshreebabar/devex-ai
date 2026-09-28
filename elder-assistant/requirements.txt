@@ -1,0 +1,5 @@
+flask>=3.0
+anthropic>=0.40
+python-dotenv>=1.0
+# Optional, only for HTTPS=1 (needed to use the microphone from a phone on your network):
+# cryptography
